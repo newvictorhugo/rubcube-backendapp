@@ -1,0 +1,19 @@
+Processo N°1 -
+
+docker compose up --build
+
+
+Para alterações no schema.prisma - 
+
+npx prisma migrate dev
+
+
+
+Processo N°2 -
+
+Caso o script.js seja alterado execute dentro do docker web -
+
+npx docker generate - gera o docker
+
+npx ts-node script.ts - Insere as informações no banco de dados
+

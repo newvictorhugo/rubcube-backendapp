@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "darwin", "darwin-arm64", "linux-musl", "debian-openssl-1.1.x", "darwin"]
+  previewFeatures = ["interactiveTransactions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  usuario_id Int @id @default(autoincrement())
+  usuario_nome String 
+  usuario_email String @unique
+  usuario_senha String
+  usuario_tel String
+  usuario_cpf String @unique
+  usuario_dtNascimento DateTime
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  conta ContaBancaria[]
+  endereco Endereco[]
+}
+
+model Endereco {
+  end_id Int @id @default(autoincrement())
+  end_cep String 
+  end_rua String
+  end_num String
+  end_complem String
+  end_bairro String
+  end_cidade String
+  end_uf String
+  usuario_id Int
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  usuario Usuario @relation(fields: [usuario_id], references: [usuario_id])
+}
+
+model ContaBancaria {
+  contaBanc_id Int @id @default(autoincrement()) 
+  contaBanc_agencia Int
+  contaBanc_conta String
+  contaBanc_senhatransacao String
+  contaBanc_tipo String
+  contaBanc_saldo Float
+  contaBanc_status String
+  usuario_id Int @unique
+  usuario Usuario @relation(fields: [usuario_id], references: [usuario_id])
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  transRem Transferencia[] @relation("trans_remetente")
+  transDest Transferencia[] @relation("trans_destinatario")
+}
+
+model Transferencia {
+  trans_id Int @id @default(autoincrement())
+  usuId_remetente Int
+  usuId_destinatario Int
+  trans_valor Float
+  trans_descricao String
+  trans_status String
+  trans_metodo String
+  createdAt DateTime @updatedAt
+  usuRem ContaBancaria @relation("trans_remetente", fields: [usuId_remetente], references: [contaBanc_id])
+  usuDest ContaBancaria @relation("trans_destinatario", fields: [usuId_destinatario], references: [contaBanc_id])
+}
+
+
